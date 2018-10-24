@@ -1,8 +1,6 @@
 package com.rod.library;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,21 +19,28 @@ public class StatusViewCenter {
     private final Context mContext;
     private final List<StatusView> mStatusViews;
     private int mContentIndex;
+    private StatusView.ClickToReloadListener mClickToReloadListener;
 
     private StatusViewCenter(@NonNull Builder builder) {
         mParent = builder.mParent;
         mContext = mParent.getContext();
         mContentView = builder.mContentView;
         mStatusViews = builder.mStatusViews;
+        mClickToReloadListener = builder.mClickToReloadListener;
+        setup();
     }
 
-    public void setup() {
+    private void setup() {
         ContentView contentView = new ContentView(mContentView);
         mStatusViews.add(contentView);
 
         mContentIndex = mParent.indexOfChild(mContentView);
         mParent.removeView(mContentView);
         mParent.addView(mStatusViews.get(0).getView(mContext), mContentIndex);
+
+        for (StatusView statusView : mStatusViews) {
+            statusView.setClickToReloadListener(mClickToReloadListener);
+        }
     }
 
     public void sendSignal(int signal) {
@@ -56,6 +61,7 @@ public class StatusViewCenter {
         final ViewGroup mParent;
         final View mContentView;
         final List<StatusView> mStatusViews = new ArrayList<>();
+        StatusView.ClickToReloadListener mClickToReloadListener;
 
         Builder(ViewGroup parent, View contentView) {
             mParent = parent;
@@ -64,6 +70,11 @@ public class StatusViewCenter {
 
         public Builder appendStatus(@NonNull StatusView statusView) {
             mStatusViews.add(statusView);
+            return this;
+        }
+
+        public Builder setClickToReloadListener(StatusView.ClickToReloadListener listener) {
+            mClickToReloadListener = listener;
             return this;
         }
 

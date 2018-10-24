@@ -2,6 +2,8 @@ package com.rod.stateview
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.Toast
 import com.rod.library.SignalConstant
 import com.rod.library.StatusViewCenter
 import com.rod.stateview.status.EmptyContentStatusView
@@ -20,10 +22,16 @@ class MainActivity : AppCompatActivity() {
         mStatusCenter = StatusViewCenter.builder(container, content)
                 .appendStatus(LoadingStatusView())
                 .appendStatus(NetErrorStatusView())
-                .appendStatus(EmptyContentStatusView())
+                .appendStatus(EmptyContentStatusView(View.OnClickListener {
+                    mStatusCenter.sendSignal(SignalConstant.LOADING)
+                    container.postDelayed({ mStatusCenter.sendSignal(SignalConstant.NET_ERROR) }, 1000)
+                }))
+                .setClickToReloadListener {
+                    Toast.makeText(this, "Reload clicked", Toast.LENGTH_SHORT).show()
+                    container.postDelayed({ mStatusCenter.sendSignal(SignalConstant.CONTENT) }, 1000)
+                }
                 .build()
 
-        mStatusCenter.setup()
         mStatusCenter.sendSignal(SignalConstant.LOADING)
 
         container.postDelayed({ mStatusCenter.sendSignal(SignalConstant.CONTENT_EMPTY) }, 3000)
