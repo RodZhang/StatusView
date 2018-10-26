@@ -24,8 +24,8 @@ class ContentView implements StatusView {
     }
 
     @Override
-    public boolean handle(int signal) {
-        return signal == SignalConstant.CONTENT;
+    public int getId() {
+        return SignalConstant.CONTENT;
     }
 
     @Override

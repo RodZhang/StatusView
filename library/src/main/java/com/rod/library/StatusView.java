@@ -13,7 +13,7 @@ public interface StatusView {
 
     View getView(@NonNull Context context);
 
-    boolean handle(int signal);
+    int getId();
 
     void setClickToReloadListener(@Nullable ClickToReloadListener listener);
 

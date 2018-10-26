@@ -1,39 +1,17 @@
 package com.rod.stateview
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Toast
-import com.rod.library.SignalConstant
-import com.rod.library.StatusViewCenter
-import com.rod.stateview.status.EmptyContentStatusView
-import com.rod.stateview.status.LoadingStatusView
-import com.rod.stateview.status.NetErrorStatusView
+import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
-    private lateinit var mStatusCenter: StatusViewCenter
+    override fun getContentLayoutId() = R.layout.activity_main
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun getContentContainer(): ViewGroup = container
 
-        mStatusCenter = StatusViewCenter.builder(container, content)
-                .appendStatus(LoadingStatusView())
-                .appendStatus(NetErrorStatusView())
-                .appendStatus(EmptyContentStatusView(View.OnClickListener {
-                    mStatusCenter.sendSignal(SignalConstant.LOADING)
-                    container.postDelayed({ mStatusCenter.sendSignal(SignalConstant.NET_ERROR) }, 1000)
-                }))
-                .setClickToReloadListener {
-                    Toast.makeText(this, "Reload clicked", Toast.LENGTH_SHORT).show()
-                    container.postDelayed({ mStatusCenter.sendSignal(SignalConstant.CONTENT) }, 1000)
-                }
-                .build()
+    override fun getContentView(): View = content
 
-        mStatusCenter.sendSignal(SignalConstant.LOADING)
-
-        container.postDelayed({ mStatusCenter.sendSignal(SignalConstant.CONTENT_EMPTY) }, 3000)
+    override fun setupView() {
     }
 }

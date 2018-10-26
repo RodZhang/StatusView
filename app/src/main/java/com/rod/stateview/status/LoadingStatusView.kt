@@ -38,5 +38,5 @@ class LoadingStatusView : StatusView {
         mView
     }
 
-    override fun handle(signal: Int) = signal == SignalConstant.LOADING
+    override fun getId() = SignalConstant.LOADING
 }

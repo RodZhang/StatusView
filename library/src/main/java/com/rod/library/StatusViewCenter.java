@@ -2,6 +2,7 @@ package com.rod.library;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,7 +18,7 @@ public class StatusViewCenter {
     private final ViewGroup mParent;
     private final View mContentView;
     private final Context mContext;
-    private final List<StatusView> mStatusViews;
+    private final SparseArray<StatusView> mStatusViews;
     private int mContentIndex;
     private StatusView.ClickToReloadListener mClickToReloadListener;
 
@@ -32,24 +33,22 @@ public class StatusViewCenter {
 
     private void setup() {
         ContentView contentView = new ContentView(mContentView);
-        mStatusViews.add(contentView);
+        mStatusViews.put(contentView.getId(), contentView);
 
         mContentIndex = mParent.indexOfChild(mContentView);
         mParent.removeView(mContentView);
         mParent.addView(mStatusViews.get(0).getView(mContext), mContentIndex);
 
-        for (StatusView statusView : mStatusViews) {
-            statusView.setClickToReloadListener(mClickToReloadListener);
+        for (int i = 0, size = mStatusViews.size(); i < size; i++) {
+            mStatusViews.valueAt(i).setClickToReloadListener(mClickToReloadListener);
         }
     }
 
     public void sendSignal(int signal) {
-        for (StatusView statusItem : mStatusViews) {
-            if (statusItem.handle(signal)) {
-                mParent.removeViewAt(mContentIndex);
-                mParent.addView(statusItem.getView(mContext), mContentIndex);
-                return;
-            }
+        StatusView statusView = mStatusViews.get(signal);
+        if (statusView != null) {
+            mParent.removeViewAt(mContentIndex);
+            mParent.addView(statusView.getView(mContext), mContentIndex);
         }
     }
 
@@ -60,7 +59,7 @@ public class StatusViewCenter {
     public static class Builder {
         final ViewGroup mParent;
         final View mContentView;
-        final List<StatusView> mStatusViews = new ArrayList<>();
+        final SparseArray<StatusView> mStatusViews = new SparseArray<>();
         StatusView.ClickToReloadListener mClickToReloadListener;
 
         Builder(ViewGroup parent, View contentView) {
@@ -68,8 +67,8 @@ public class StatusViewCenter {
             mContentView = contentView;
         }
 
-        public Builder appendStatus(@NonNull StatusView statusView) {
-            mStatusViews.add(statusView);
+        public Builder putStatus(@NonNull StatusView statusView) {
+            mStatusViews.put(statusView.getId(), statusView);
             return this;
         }
 

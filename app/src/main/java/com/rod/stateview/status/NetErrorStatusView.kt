@@ -37,5 +37,5 @@ class NetErrorStatusView : StatusView {
         mView
     }
 
-    override fun handle(signal: Int) = signal == SignalConstant.NET_ERROR
+    override fun getId() = SignalConstant.NET_ERROR
 }

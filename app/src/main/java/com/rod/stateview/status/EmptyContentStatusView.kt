@@ -39,5 +39,5 @@ class EmptyContentStatusView(private val clickListener: View.OnClickListener? = 
         mView
     }
 
-    override fun handle(signal: Int) = signal == SignalConstant.CONTENT_EMPTY
+    override fun getId() = SignalConstant.CONTENT_EMPTY
 }
